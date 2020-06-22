@@ -18,12 +18,22 @@ services:
       SPRING_PROFILES_ACTIVE: stage
     ports:
       - "9088:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
   config-server:
-    image: config-server:0.0.1
+    image: config-server:0.0.2
     environment:
       SPRING_PROFILES_ACTIVE: stage
     ports:
       - "9083:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/user-service-stage.yaml"]
+      interval: 10s
+      timeout: 10s
+      retries: 3      
   email-service:
     image: email-service:0.0.1
     environment:
@@ -31,11 +41,19 @@ services:
     ports:
       - "9081:80"
   user-service:
-    image: user-service:0.0.1
+    image: user-service:0.0.3
     environment:
       SPRING_PROFILES_ACTIVE: stage
     ports:
       - "9082:80"
+    depends_on:
+      - config-server
+      - eureka-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 3
   api-gateway:
     image: api-gateway:0.0.1
     environment:
