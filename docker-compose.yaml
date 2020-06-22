@@ -1,0 +1,46 @@
+version: '3'
+services:
+  mysql-server:
+    image: mysql:5.7
+    volumes:
+      - mysql-server-data:/var/lib/mysql-server
+    container_name: mysql-server
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: spring-user
+      MYSQL_PASSWORD: 123qwe
+      MYSQL_DATABASE: spring-homework
+    ports:
+      - "3306:3306"
+  eureka-server:
+    image: service-center:0.0.1
+    environment:
+      SPRING_PROFILES_ACTIVE: stage
+    ports:
+      - "9088:80"
+  config-server:
+    image: config-server:0.0.1
+    environment:
+      SPRING_PROFILES_ACTIVE: stage
+    ports:
+      - "9083:80"
+  email-service:
+    image: email-service:0.0.1
+    environment:
+      SPRING_PROFILES_ACTIVE: stage
+    ports:
+      - "9081:80"
+  user-service:
+    image: user-service:0.0.1
+    environment:
+      SPRING_PROFILES_ACTIVE: stage
+    ports:
+      - "9082:80"
+  api-gateway:
+    image: api-gateway:0.0.1
+    environment:
+      SPRING_PROFILES_ACTIVE: stage
+    ports:
+      - "9090:80"
+volumes:
+  mysql-server-data:
